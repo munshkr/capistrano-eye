@@ -1,10 +1,14 @@
 namespace :eye do
+  def eye_command_with_args(*args)
+    Array(fetch(:eye_command)) + args
+  end
+
   desc 'Load eye config'
   task :load do
     on roles(fetch(:eye_roles)) do
       with fetch(:eye_env) do
         within(release_path) do
-          execute :eye, :load, fetch(:eye_config)
+          execute *eye_command_with_args(:load, fetch(:eye_config))
         end
       end
     end
@@ -16,7 +20,7 @@ namespace :eye do
       on roles(fetch(:eye_roles)) do
         with fetch(:eye_env) do
           within(release_path) do
-            execute :eye, cmd, fetch(:eye_application)
+            execute *eye_command_with_args(cmd, fetch(:eye_application))
           end
         end
       end
@@ -29,7 +33,7 @@ namespace :eye do
       puts server.hostname
       with fetch(:eye_env) do
         within(release_path) do
-          puts capture(:eye, :info, fetch(:eye_application))
+          puts capture(*eye_command_with_args(:info, fetch(:eye_application)))
         end
       end
     end
@@ -41,6 +45,7 @@ end
 
 namespace :load do
   task :defaults do
+    set :eye_command, :eye
     set :eye_roles, :app
     set :eye_env, -> { { rails_env: fetch(:stage) } }
     set :eye_application, -> { fetch(:application) }
