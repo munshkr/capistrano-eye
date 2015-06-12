@@ -36,9 +36,15 @@ require 'capistrano/eye/no_hook'
 after :some_other_task, :'eye:restart'
 ```
 
+If using RVM and Bundler, use setting:
+
+    set :eye_command, [:bundle, :exec, :eye]
+
+
 ## Configuration
     set :eye_application # capistrano application name by default
     set :eye_config,     # ./config/eye_application.eye
+    set :eye_command     # command to run eye (default=:eye)
 
 ## Contributing
 
